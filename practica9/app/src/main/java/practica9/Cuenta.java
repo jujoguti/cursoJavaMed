@@ -1,14 +1,18 @@
-package practica;
+package practica9;
+
+import java.time.LocalDate;
 
 public abstract class Cuenta {
     private String numero;
     private double saldo;
-    private String fechaApartura;
+    private LocalDate fechaApartura;
+    private LocalDate fechaCancelacion;
 
-    public Cuenta(String numero, double saldo, String fechaApartura) {
+    public Cuenta(String numero, double saldo, LocalDate fechaApartura, LocalDate fechaCancelacion) {
         this.numero = numero;
         this.saldo = saldo;
         this.fechaApartura = fechaApartura;
+        this.fechaCancelacion = fechaCancelacion;
     }
 
     public String getNumero() {
@@ -27,11 +31,11 @@ public abstract class Cuenta {
         this.saldo = saldo;
     }
 
-    public String getFechaApartura() {
+    public LocalDate getFechaApartura() {
         return fechaApartura;
     }
 
-    public void setFechaApartura(String fechaApartura) {
+    public void setFechaApartura(LocalDate fechaApartura) {
         this.fechaApartura = fechaApartura;
     }
 
@@ -41,6 +45,7 @@ public abstract class Cuenta {
                 "numero='" + numero + '\'' +
                 ", saldo=" + saldo +
                 ", fechaApartura=" + fechaApartura +
+                ", fechaCancelacion=" + fechaCancelacion +
                 "}";
     }
 }
