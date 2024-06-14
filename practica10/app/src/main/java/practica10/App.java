@@ -95,7 +95,7 @@ public class App {
 
                     listCuenta.add(datos);
                 }
-                System.out.println("--- fin de archivo ---");
+
             }catch(IOException exception){
                 System.out.println(exception);
             }
