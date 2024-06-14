@@ -3,15 +3,14 @@
  */
 package practica10;
 
+import org.checkerframework.checker.units.qual.A;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.*;
 
 public class App {
@@ -38,12 +37,27 @@ public class App {
     public static ArrayList<Cliente> uploadAccount(ArrayList<Cliente> clientes, String ruta){
 
         ExecutorService executorService = Executors.newSingleThreadExecutor();
-        Future<Map<Integer,Cuenta>> futureCuenta = executorService.submit(new leerArchivoCallable());
+        Future<ArrayList<String[]>> futureCuenta = executorService.submit(new leerArchivoCallable());
 
         try {
-            ArrayList<Object> ArchivoCuentas = new ArrayList<>(futureCuenta.get().values());
-            ArchivoCuentas.forEach(archivo ->{
-                System.out.println("indice: "+archivo.hashCode()+"lee el archivo "+archivo.toString());
+            ArrayList<String[]> ArchivoCuentas = futureCuenta.get();
+
+            ArchivoCuentas.forEach(datos ->{
+
+                int idCliente = Integer.parseInt(datos[4]);
+                LocalDate fechaApertura = convertirFecha(datos[1]);
+                clientes.forEach(cliente -> {
+                    if (idCliente==cliente.getId()) {
+                        if (datos[5].equals("CA")) {
+                            cliente.agregarCuenta(new CuentaDeAhorro(datos[0], Double.parseDouble(datos[2]), fechaApertura,
+                                    convertirFecha("08-06-2024"), Double.parseDouble(datos[3])));
+
+                        } else if (datos[5].equals("CC")) {
+                            cliente.agregarCuenta(new CuentaDeCheque(datos[0], Double.parseDouble(datos[2]), fechaApertura,
+                                    convertirFecha("08-06-2024"), Double.parseDouble(datos[3])));
+                        }
+                    }
+                });
 
             });
         } catch (InterruptedException | ExecutionException e) {
@@ -58,29 +72,24 @@ public class App {
         return LocalDate.parse(fecha,formato);
     }
 
-    private static class leerArchivoCallable implements Callable<Map<Integer,Cuenta>> {
+    private static class leerArchivoCallable implements Callable<ArrayList<String[]>> {
 
         @Override
-        public Map<Integer,Cuenta> call() throws Exception {
+        public ArrayList<String[]> call() throws Exception {
             String ruta = "C:\\Users\\jujoguti\\Documents\\cursos banco\\2024\\Java Midle\\cursoJavaMed\\practica-8\\app\\src\\main\\resources\\cuentas.txt";
-            Map<Integer, Cuenta> listCuenta = new HashMap<Integer, Cuenta>();
+            ArrayList<String[]> listCuenta = new ArrayList<>();
 
             try (BufferedReader reader = new BufferedReader(new FileReader(ruta))) {
                 String linea = null;
                 while ((linea=reader.readLine())!= null) {
+                    //quito los espacio a la linea del archivo
                     linea =  linea.replaceAll("\\s","");
+                    //obtengo el tipo de cuenta
                     String tipo = linea.substring(0,2);
-                    String[] datos =  linea.substring(3,linea.length()-1).split(",");
-                    int idCliente = Integer.parseInt(datos[4]);
-                    LocalDate fechaApertura = convertirFecha(datos[1]);
-                            if (tipo.equals("CA")){
-                                listCuenta.put(idCliente,new CuentaDeAhorro(datos[0],Double.parseDouble(datos[2]),fechaApertura,
-                                        convertirFecha("08-06-2024"), Double.parseDouble(datos[3])));
+                    //obtengo los datos de la cuenta y lo asigno a un arreglo de string separados por ,
+                    String[] datos =  linea.substring(3,linea.length()-1).concat(","+tipo).split(",");
 
-                            }else if (tipo.equals("CC")){
-                                listCuenta.put(idCliente,new CuentaDeCheque(datos[0],Double.parseDouble(datos[2]),fechaApertura,
-                                        convertirFecha("08-06-2024"), Double.parseDouble(datos[3])));
-                            }
+                    listCuenta.add(datos);
                 }
                 System.out.println("--- fin de archivo ---");
             }catch(IOException exception){
