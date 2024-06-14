@@ -80,9 +80,9 @@ public class App {
 
     private static class leerArchivoCallable implements Callable<ArrayList<Object>> {
 
-        private static final String URL = "jdbc:postgresql://localhost:5432/practica12";
-        private static final String USER = "root";
-        private static final String PASSWORD= "";
+        private static final String URL = "jdbc:postgresql://localhost:5433/practica12";
+        private static final String USER = "postgres";
+        private static final String PASSWORD= "postgres";
 
         @Override
         public ArrayList<Object> call() throws Exception {
@@ -90,7 +90,7 @@ public class App {
             Class.forName("org.postgresql.Driver");
 
             Connection connection = DriverManager.getConnection(URL,USER,PASSWORD);
-            String query = "Select numero,fecha,saldo,interes,cliente,tipoCuenta from practica12.cuentas";
+            String query = "Select numero,fecha,saldo,interes,cliente,tipoCuenta from cuentas";
             PreparedStatement preparedStatement = connection.prepareStatement(query);
             ResultSet resultSet = preparedStatement.executeQuery();
 
