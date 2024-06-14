@@ -46,9 +46,9 @@ public class App {
             ArrayList<Object> cuentasBD = futureCuenta.get();
             System.out.println("despues "+cuentasBD);
             executorService.shutdown();
-/*
+
             cuentasBD.forEach(datos ->{
-                int idCliente = Integer.parseInt(datos);
+                int idCliente = datos[5]("cliente");
                 LocalDate fechaApertura = convertirFecha(datos[1]);
                 clientes.forEach(cliente -> {
                     if (idCliente==cliente.getId()) {
@@ -65,7 +65,7 @@ public class App {
                     }
                 });
 
-            });*/
+            });
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
