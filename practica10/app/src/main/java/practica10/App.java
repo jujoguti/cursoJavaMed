@@ -37,17 +37,20 @@ public class App {
     public static ArrayList<Cliente> uploadAccount(ArrayList<Cliente> clientes, String ruta){
 
         ExecutorService executorService = Executors.newSingleThreadExecutor();
+
         Future<ArrayList<String[]>> futureCuenta = executorService.submit(new leerArchivoCallable());
 
         try {
             ArrayList<String[]> ArchivoCuentas = futureCuenta.get();
 
-            ArchivoCuentas.forEach(datos ->{
+            executorService.shutdown();
 
+            ArchivoCuentas.forEach(datos ->{
                 int idCliente = Integer.parseInt(datos[4]);
                 LocalDate fechaApertura = convertirFecha(datos[1]);
                 clientes.forEach(cliente -> {
                     if (idCliente==cliente.getId()) {
+
                         if (datos[5].equals("CA")) {
                             cliente.agregarCuenta(new CuentaDeAhorro(datos[0], Double.parseDouble(datos[2]), fechaApertura,
                                     convertirFecha("08-06-2024"), Double.parseDouble(datos[3])));
@@ -56,6 +59,7 @@ public class App {
                             cliente.agregarCuenta(new CuentaDeCheque(datos[0], Double.parseDouble(datos[2]), fechaApertura,
                                     convertirFecha("08-06-2024"), Double.parseDouble(datos[3])));
                         }
+
                     }
                 });
 
